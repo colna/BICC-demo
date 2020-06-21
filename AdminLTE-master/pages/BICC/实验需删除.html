@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../../plugins/js-xlsx/xlsx.core.min.js"></script>
+</head>
+<body>
+    <div class="modal-body">
+        <input type="file" οnchange="importf(obj)" id="excel" />
+         <span id="uploadCarVin_prompt" style="color: red;"> </span>
+        </div>
+
+        <script>
+            var wb; //读取完成的数据  
+var rABS = false; //是否将文件读取为二进制字符串  
+//导入文件
+function importf(obj) {				
+	if(!obj.files) {
+	return;
+	}
+	//验证格式
+	var suffix = obj.files[0].name.split(".")[1]
+	if(suffix != 'xls' && suffix !='xlsx'){
+	$("#uploadCarVin_prompt").text('导入的文件格式不正确!');			    	
+	//清空上传文本框文件
+	var obj = document.getElementById("excel");
+	obj.outerHTML = obj.outerHTML;
+	return;
+	}
+	const IMPORTFILE_MAXSIZE = 10 * 1024; //自定义控制导入文件大小10M
+	if(obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
+		$("#uploadCarVin_prompt").text('导入的表格文件不能大于10M!');
+	//清空上传文本框文件
+		var obj = document.getElementById("excel");
+		obj.outerHTML = obj.outerHTML;
+		return;
+		}	
+		var f = obj.files[0];
+		var reader = new FileReader();
+		reader.onload = function(e) {
+		var data = e.target.result;
+		if(rABS) {
+		wb = XLSX.read(btoa(fixdata(data)), { //手动转化
+		type: 'base64'
+			});
+		} else {
+		wb = XLSX.read(data, {
+		type: 'binary'
+		});
+		}
+		var strVin = ""; 
+		var jsonStr = JSON.stringify(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+		var jsonObj = JSON.parse(jsonStr);
+		for(var i = 0; i < jsonObj.length; i++) {
+		strVin = jsonObj[i].VIN + "," + strVin;
+		}					
+        // $("#fenceCarList").val(strVin);//将数据在某个位置显示出来
+        console.log(strVin);
+        
+		//选择文件框消失
+		$('#addModal').modal('hide');
+				};
+ 
+				if(rABS) {
+					reader.readAsArrayBuffer(f);
+				} else {
+					reader.readAsBinaryString(f);
+				}
+			}
+			//文件流转BinaryString
+			function fixdata(data) {
+				var o = "",
+					l = 0,
+					w = 10240;
+				for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
+				o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
+				return o;
+			}
+
+        </script>
+</body>
+</html>
