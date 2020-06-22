@@ -1,84 +1,353 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="../../plugins/js-xlsx/xlsx.core.min.js"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 3 | Simple Tables</title>
+  <!-- Tell the browser to be responsive to screen width -->
+   <!-- Tell the browser to be responsive to screen width -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+   <!-- Font Awesome -->
+   <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+   <!-- Ionicons -->
+   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+   <!-- DataTables -->
+   <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+   <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+   <!-- Theme style -->
+   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+   <!-- Google Font: Source Sans Pro -->
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    
+
+  
+    
+  <style>
+    .head-img {
+      text-align: center;
+      float: left;
+      cursor: pointer;
+      background-color: #007BFF;
+      color: white;
+      /* padding: 4px 8px; */
+      padding-right: 8px;
+      padding-left: 8px;
+      padding-top: 5px;
+      padding-bottom: 4px;
+      font-size: 14px;
+      border-radius: 0.2rem;
+    }
+
+    #my-img {
+      width: 19px;
+      height: 19px;
+      color: white;
+      margin-right: 10px;
+      margin-bottom: 3px;
+    }
+
+    #excel-file {
+      display: none;
+    }
+  </style>
 </head>
-<body>
-    <div class="modal-body">
-        <input type="file" οnchange="importf(obj)" id="excel" />
-         <span id="uploadCarVin_prompt" style="color: red;"> </span>
+
+<body class="hold-transition sidebar-mini">
+  <div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand  navbar-primary navbar-dark">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#" role="button" style="color: white;"><i
+              class="fas fa-bars"></i></a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="#" class="nav-link">当前权限：<span>一级</span></a>
+        </li>
+      </ul>
+
+      <!-- SEARCH FORM -->
+
+
+      <!-- Right navbar links -->
+      <ul class="navbar-nav ml-auto">
+        <!-- Messages Dropdown Menu -->
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="#" class="nav-link">XingMing</a>
+        </li>
+        <li class="nav-item d-none d-sm-inline-block">
+          <a href="#" class="nav-link">退出</a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="index3.html" class="brand-link">
+        <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+          style="opacity: .8">
+        <span class="brand-text font-weight-light">AdminLTE 3</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <h3 class="nav-link"><a>校友会管理系统<a></h3>
         </div>
 
-        <script>
-            var wb; //读取完成的数据  
-var rABS = false; //是否将文件读取为二进制字符串  
-//导入文件
-function importf(obj) {				
-	if(!obj.files) {
-	return;
-	}
-	//验证格式
-	var suffix = obj.files[0].name.split(".")[1]
-	if(suffix != 'xls' && suffix !='xlsx'){
-	$("#uploadCarVin_prompt").text('导入的文件格式不正确!');			    	
-	//清空上传文本框文件
-	var obj = document.getElementById("excel");
-	obj.outerHTML = obj.outerHTML;
-	return;
-	}
-	const IMPORTFILE_MAXSIZE = 10 * 1024; //自定义控制导入文件大小10M
-	if(obj.files[0].size / 1024 > IMPORTFILE_MAXSIZE) {
-		$("#uploadCarVin_prompt").text('导入的表格文件不能大于10M!');
-	//清空上传文本框文件
-		var obj = document.getElementById("excel");
-		obj.outerHTML = obj.outerHTML;
-		return;
-		}	
-		var f = obj.files[0];
-		var reader = new FileReader();
-		reader.onload = function(e) {
-		var data = e.target.result;
-		if(rABS) {
-		wb = XLSX.read(btoa(fixdata(data)), { //手动转化
-		type: 'base64'
-			});
-		} else {
-		wb = XLSX.read(data, {
-		type: 'binary'
-		});
-		}
-		var strVin = ""; 
-		var jsonStr = JSON.stringify(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
-		var jsonObj = JSON.parse(jsonStr);
-		for(var i = 0; i < jsonObj.length; i++) {
-		strVin = jsonObj[i].VIN + "," + strVin;
-		}					
-        // $("#fenceCarList").val(strVin);//将数据在某个位置显示出来
-        console.log(strVin);
-        
-		//选择文件框消失
-		$('#addModal').modal('hide');
-				};
- 
-				if(rABS) {
-					reader.readAsArrayBuffer(f);
-				} else {
-					reader.readAsBinaryString(f);
-				}
-			}
-			//文件流转BinaryString
-			function fixdata(data) {
-				var o = "",
-					l = 0,
-					w = 10240;
-				for(; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
-				o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
-				return o;
-			}
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+          <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
-        </script>
+            <li class="nav-item">
+              <a href="simple.html" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  栏目编辑
+                </p>
+              </a>
+            </li>
+
+
+            <li class="nav-item has-treeview ">
+              <a class="nav-link ">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  信息管理
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="stu-info.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>学生信息管理</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="user-info.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>用户信息管理</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+
+            <li class="nav-item has-treeview ">
+              <a href="#" class="nav-link ">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  消息推送
+                  <i class="right fas fa-angle-left"></i>
+                </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                  <a href="mailbox.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>收件箱</p>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a href="compose.html" class="nav-link active">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>写信</p>
+                  </a>
+                </li>
+              </ul>
+            </li>
+
+            <li class="nav-item">
+              <a href="simple-audit.html" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  文章审核
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  日志查询
+                </p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                <i class="nav-icon fas fa-th"></i>
+                <p>
+                  数据分析
+                </p>
+              </a>
+            </li>
+
+          </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <section class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1>信息管理</h1>
+            </div>
+            <div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active">用户信息管理</li>
+              </ol>
+            </div>
+          </div>
+        </div><!-- /.container-fluid -->
+      </section>
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="container-fluid">
+
+
+          <!-- /.row -->
+          <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">用户信息管理</h3>
+                  <!-- <ol class="breadcrumb " style="background-color: rgba(0,0,0,0);margin-right: 100px;width: 200px;">
+                    <li><a href="#">Home</a></li>
+                    <li style="margin-left: 20px;"><a href="#">Home</a></li>
+                </ol> -->
+                  <div class="float-sm-right" style="margin-left: 5%;">
+                    <!-- <input type="file" class="btn  btn-primary btn-sm " id="excel-file"> -->
+                    <div class="head-img">
+                      <img src="../../dist/BICC/img/import.png" id="my-img">
+                      导入表格
+                      <input type="file" id="excel-file" />
+                    </div>
+                    <button type="button" class="btn  btn-primary btn-sm" style="margin-left: 20px;">新增</button>
+                  </div>
+                  <div class="card-tools" style="margin-top: 5px;">
+
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                      <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                      <div class="input-group-append">
+                        <button type="submit" class="btn btn-default"><i class="fas fa-search"></i></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                  <table class="table table-head-fixed text-nowrap " id="example2">
+                    <thead>
+                      <tr>
+                          <th>ID</th>
+                          <th>用户姓名</th>
+                          <th>账号</th>
+                          <th>密码</th>
+                          <th>权限等级</th>
+                          <th></th>
+  
+                        </tr>
+                    </thead>
+                    <tbody>
+                
+                    <tr>
+                      <td>999</td>
+                      <td>测试数据</td>
+                      <td>001</td>
+                      <td><span class="tag tag-success">888</span></td>
+                      <td>1</td>
+                      <td>
+                        <button type="button" class="btn  btn-primary btn-sm change">修改</button>
+                        <button type="button" class="btn  btn-primary btn-sm del" style="margin-left: 20px; ">删除</button>
+                      </td>
+                    </tr>
+                  
+                    </tbody>
+                  
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+          </div>
+          <!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <footer class="main-footer">
+      <div class="float-right d-none d-sm-block">
+        <b>Version</b> 3.0.6-pre
+      </div>
+      <strong>Copyright &copy; 2014-2020 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights
+      reserved.
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+
+  <!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables -->
+<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../dist/js/demo.js"></script>
+  <script src="../../plugins/js-xlsx/xlsx.core.min.js"></script>
+  <!-- 导入Excel 动态生成表格 -->
+  <script src="../../dist/BICC/js/info.js"></script>
+  <script>
+    $(function(){
+    
+    // $('#example2').DataTable({
+    //   "paging": true,
+    //   "lengthChange": false,
+    //   "searching": false,
+    //   "ordering": false,
+    //   "info": false,
+    //   "autoWidth": false,
+    //   "responsive": true,
+    // });
+    $(document).ready(function () {
+      $('#my-img').click(function () {
+        $('#excel-file').click();
+      });
+
+    });
+    })
+  </script>
 </body>
+
 </html>

@@ -6,17 +6,22 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>AdminLTE 3 | Simple Tables</title>
   <!-- Tell the browser to be responsive to screen width -->
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
-  <!-- Ionicons -->
-  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-  <!-- Theme style -->
-  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
-  <!-- Google Font: Source Sans Pro -->
-  <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <!-- Font Awesome -->
+   <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+   <!-- Ionicons -->
+   <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+   <!-- DataTables -->
+   <!-- <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+   <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css"> -->
+   <!-- Theme style -->
+   <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+   <!-- Google Font: Source Sans Pro -->
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    
 
+  
+    
   <style>
     .head-img {
       text-align: center;
@@ -228,7 +233,7 @@
                   <div class="float-sm-right" style="margin-left: 5%;">
                     <!-- <input type="file" class="btn  btn-primary btn-sm " id="excel-file"> -->
                     <div class="head-img">
-                      <img src="../../dist/img/import.png" id="my-img">
+                      <img src="../../dist/BICC/img/import.png" id="my-img">
                       导入表格
                       <input type="file" id="excel-file" />
                     </div>
@@ -247,30 +252,30 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body table-responsive p-0">
-                  <table class="table table-head-fixed text-nowrap">
+                  <table class="table table-head-fixed text-nowrap " id="example2">
                     <thead>
                       <tr>
-                        <th>ID</th>
-                        <th>用户姓名</th>
-                        <th>账号</th>
-                        <th>密码</th>
-                        <th>权限等级</th>
-                      </tr>
+                          <th>ID</th>
+                          <th>用户姓名</th>
+                          <th>账号</th>
+                          <th>密码</th>
+                          <th>权限等级</th>
+                          <th></th>
+                        </tr>
                     </thead>
-                    <tbody>
-                      <tr>
-                        <td>999</td>
-                        <td>李四</td>
-                        <td>001</td>
-                        <td><span class="tag tag-success">888</span></td>
-                        <td>1</td>
-                        <td>
-                          <button type="button" class="btn  btn-primary btn-sm change">修改</button>
-                          <button type="button" class="btn  btn-primary btn-sm del" style="margin-left: 20px; ">删除</button>
-                        </td>
-                      </tr>
-
-                    </tbody>
+                    <tbody>                
+                    <tr>
+                      <td>999</td>
+                      <td>测试数据</td>
+                      <td>001</td>
+                      <td>888</td>
+                      <td>1</td>
+                      <td>
+                        <button type="button" class="btn  btn-primary btn-sm change">修改</button>
+                        <button type="button" class="btn  btn-primary btn-sm del" style="margin-left: 20px; ">删除</button>
+                      </td>
+                    </tr>         
+                    </tbody>                
                   </table>
                 </div>
                 <!-- /.card-body -->
@@ -302,94 +307,42 @@
 
 
   <!-- jQuery -->
-  <script src="../../plugins/jquery/jquery.min.js"></script>
-  <!-- Bootstrap 4 -->
-  <script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <!-- AdminLTE App -->
-  <script src="../../dist/js/adminlte.min.js"></script>
-  <!-- AdminLTE for demo purposes -->
-  <script src="../../dist/js/demo.js"></script>
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables
+<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script> -->
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../dist/js/demo.js"></script>
+<!-- js-xlsx -->
   <script src="../../plugins/js-xlsx/xlsx.core.min.js"></script>
+  <!-- 导入Excel 动态生成表格 -->
+  <script src="../../dist/BICC/js/info.js"></script>
   <script>
-    $(function () {
-      $('#excel-file').change(function (e) {
-        var files = e.target.files;
-        var fileReader = new FileReader();
-        fileReader.onload = function (ev) {
-          try {
-            var data = ev.target.result,
-              workbook = XLSX.read(data, {
-                type: 'binary'
-              }), // 以二进制流方式读取得到整份excel表格对象
-              persons = []; // 存储获取到的数据
-          } catch (e) {
-            console.log('文件类型不正确');
-            return;
-          }
-
-          // 表格的表格范围，可用于判断表头是否数量是否正确
-          var fromTo = '';
-          // 遍历每张表读取
-          for (var sheet in workbook.Sheets) {
-            if (workbook.Sheets.hasOwnProperty(sheet)) {
-              fromTo = workbook.Sheets[sheet]['!ref'];
-              // console.log(fromTo);
-              persons = persons.concat(XLSX.utils.sheet_to_json(workbook.Sheets[sheet]));
-              // break; // 如果只取第一张表，就取消注释这行
-            }
-          }
-
-          console.log(persons);
-          //动态生成表格
-          var tbody=document.querySelector("tbody");
-    for(var i=0;i<persons.length;i++)  //外面的for循环 是 行tr
-    {
-        var tr=document.createElement("tr");
-        tbody.appendChild(tr);
-        //3,往tr每一行里面创建单元格（跟数据有关系的3个单元格），td单元格的数量取决于每个对象的属性个数 for循环遍历对象 persons[i]
-        for(var k in persons[i])   //里面的for循环是 列
-        {
-            var td=document.createElement("td");  //创建单元格
-            tr.appendChild(td);
-            td.innerHTML=persons[i][k]; //把对象里面的属性值 persons[i][k]给td
-        }
-        //4，创建有删除二字的单元格
-        var td=document.createElement("td");
-        tr.appendChild(td);
-        td.innerHTML="<button type='button' class='btn  btn-primary btn-sm change'>修改</button><button type='button' class='btn  btn-primary btn-sm del' style='margin-left: 20px;'>删除</button>";
- 
-    }
-    //5,删除操作
-    var as=document.getElementsByClassName('del');
-    for(var i=0;i<as.length;i++)
-    {
-        as[i].onclick=function () {  //点击a 删除 当前a 所在的行（a链接的爸爸的爸爸）
-            tbody.removeChild(this.parentNode.parentNode);
-        }
-    }
-         
-        };
-
-        // 以二进制方式打开文件
-        fileReader.readAsBinaryString(files[0]);
+    $(function(){
     
+    // $('#example2').DataTable({
+    //   "paging": true,
+    //   "lengthChange": false,
+    //   "searching": false,
+    //   "ordering": false,
+    //   "info": false,
+    //   "autoWidth": false,
+    //   "responsive": true,
+    // });
+    $(document).ready(function () {
+      $('#my-img').click(function () {
+        $('#excel-file').click();
       });
-      //修改input type="file" 样式
-      $(document).ready(function () {
-        $('#my-img').click(function () {
-          $('#excel-file').click();
-        });
 
-      });
-
-      //
+    });
     })
-
-
-
-
   </script>
-
 </body>
 
 </html>
